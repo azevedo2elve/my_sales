@@ -1,6 +1,7 @@
 import js from '@eslint/js';
 import tseslint from '@typescript-eslint/eslint-plugin';
 import tsparser from '@typescript-eslint/parser';
+import prettierConfig from 'eslint-config-prettier';
 
 export default [
   {
@@ -30,11 +31,28 @@ export default [
     rules: {
       ...js.configs.recommended.rules,
       ...tseslint.configs.recommended.rules,
+      ...prettierConfig.rules,
       'no-undef': 'off',
-      "no-console": "warn"
+      'no-console': 'warn',
+      'max-len': [
+        'error',
+        {
+          code: 80,
+          ignoreUrls: true,
+          ignoreStrings: true,
+          ignoreTemplateLiterals: true,
+          ignoreComments: true,
+        },
+      ],
     },
   },
   {
-    ignores: ['node_modules/**', 'build/**', 'dist/**', '*.js', 'eslint.config.js'],
+    ignores: [
+      'node_modules/**',
+      'build/**',
+      'dist/**',
+      '*.js',
+      'eslint.config.js',
+    ],
   },
 ];
