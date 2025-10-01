@@ -45,6 +45,17 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "allowJs": true,
-    "noImplicitAny": true,
-  }
+    "noImplicitAny": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    "**/*.config.js",
+    "**/*.test.ts",
+    "**/*.spec.ts"
+  ]
 }
