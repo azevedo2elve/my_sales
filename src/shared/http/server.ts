@@ -5,7 +5,7 @@ import cors from 'cors';
 
 import routes from './routes';
 import ErrorHandleMiddleware from '@shared/middlewares/ErrorHandleMiddleware';
-import { AppDataSource } from '@shared/typeorm/data-source';
+import AppDataSource from '@shared/infra/typeorm/data-source';
 
 AppDataSource.initialize()
   .then(async () => {

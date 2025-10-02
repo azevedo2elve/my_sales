@@ -44,6 +44,26 @@ export default [
           ignoreComments: true,
         },
       ],
+      '@typescript-eslint/consistent-type-imports': [
+        'error',
+        {
+          prefer: 'type-imports',
+          fixStyle: 'inline-type-imports',
+        },
+      ],
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_' },
+      ],
+    },
+  },
+  {
+    files: ['**/migrations/*.ts'],
+    rules: {
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^(queryRunner|_)' },
+      ],
     },
   },
   {
@@ -53,6 +73,7 @@ export default [
       'dist/**',
       '*.js',
       'eslint.config.js',
+      'ormconfig.ts',
     ],
   },
 ];

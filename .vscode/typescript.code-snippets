@@ -1,0 +1,19 @@
+{
+  "TypeORM Migration": {
+    "prefix": "migration",
+    "body": [
+      "import { type MigrationInterface, type QueryRunner } from 'typeorm';",
+      "",
+      "export class ${1:MigrationName}${2:1234567890} implements MigrationInterface {",
+      "  public async up(queryRunner: QueryRunner): Promise<void> {",
+      "    $3",
+      "  }",
+      "",
+      "  public async down(queryRunner: QueryRunner): Promise<void> {",
+      "    $4",
+      "  }",
+      "}",
+    ],
+    "description": "Template para migration do TypeORM com imports de tipo corretos",
+  },
+}
