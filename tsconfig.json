@@ -23,7 +23,7 @@
 
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "strictPropertyInitialization": false,
+    "strictPropertyInitialization": true,
 
     // Other Outputs
     "sourceMap": true,
@@ -31,7 +31,7 @@
     "declarationMap": true,
 
     // Stricter Typechecking Options
-    "noUncheckedIndexedAccess": true,
+    "noUncheckedIndexedAccess": false,
     "exactOptionalPropertyTypes": true,
 
     // Style Options
@@ -50,8 +50,6 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    // "typeRoots": ["./node_modules/@types", "./src/@types"],
 
     "esModuleInterop": true,
     "resolveJsonModule": true,
