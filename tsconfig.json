@@ -23,7 +23,7 @@
 
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "strictPropertyInitialization": true,
+    "strictPropertyInitialization": false,
 
     // Other Outputs
     "sourceMap": true,
