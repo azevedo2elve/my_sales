@@ -1,5 +1,5 @@
 import AppDataSource from '@shared/infra/typeorm/data-source';
-import { Product } from '../entities/Products';
+import { Product } from '../entities/Product';
 
 export const productsRepositories = AppDataSource.getRepository(Product).extend(
   {

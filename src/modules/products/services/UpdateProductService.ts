@@ -1,6 +1,6 @@
 import AppError from '../../../shared/errors/AppError';
-import type { Product } from '../database/entities/Products';
-import { productsRepositories } from '../database/repositories/ProductsRepositories';
+import type { Product } from '../database/entities/Product';
+import { productsRepositories } from '../database/repositories/ProductRepositories';
 
 interface IUpdateProduct {
   id: string;
