@@ -4,7 +4,6 @@ import ShowProductService from '../services/ShowProductService';
 import CreateProductService from '../services/CreateProductService';
 import UpdateProductService from '../services/UpdateProductService';
 import DeleteProductService from '../services/DeleteProductService';
-import { RepositoryNotTreeError } from 'typeorm';
 
 export default class ProductsControllers {
   async index(request: Request, response: Response): Promise<Response> {
