@@ -1,6 +1,6 @@
 import AppError from '../../../shared/errors/AppError';
 import type { Product } from '../database/entities/Product';
-import { productsRepositories } from '../database/repositories/ProductRepositories';
+import { productRepository } from '../database/repository/product.repository';
 
 interface IUpdateProduct {
   id: string;
@@ -16,13 +16,13 @@ export default class UpdateProductService {
     price,
     quantity,
   }: IUpdateProduct): Promise<Product> {
-    const product = await productsRepositories.findById(id);
+    const product = await productRepository.findById(id);
 
     if (!product) {
       throw new AppError('Product not found!', 404);
     }
 
-    const productExist = await productsRepositories.findByName(name);
+    const productExist = await productRepository.findByName(name);
 
     if (productExist) {
       throw new AppError('There is already one product with this name', 409);
@@ -32,7 +32,7 @@ export default class UpdateProductService {
     product.price = price;
     product.quantity = quantity;
 
-    await productsRepositories.save(product);
+    await productRepository.save(product);
 
     return product;
   }

@@ -1,5 +1,5 @@
 import AppError from '@shared/errors/AppError';
-import { productsRepositories } from '../database/repositories/ProductRepositories';
+import { productRepository } from '../database/repository/product.repository';
 
 interface IDeleteProduct {
   id: string;
@@ -7,12 +7,12 @@ interface IDeleteProduct {
 
 export default class DeleteProductService {
   async execute({ id }: IDeleteProduct): Promise<void> {
-    const product = await productsRepositories.findById(id);
+    const product = await productRepository.findById(id);
 
     if (!product) {
       throw new AppError('Product not found', 404);
     }
 
-    await productsRepositories.remove(product);
+    await productRepository.remove(product);
   }
 }

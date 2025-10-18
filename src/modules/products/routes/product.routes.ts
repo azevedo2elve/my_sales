@@ -1,10 +1,10 @@
 import { Router } from 'express';
-import ProductsControllers from '../controllers/ProductsControllers';
+import ProductsControllers from '../controllers/ProductController';
 import {
   createProductSchema,
   idParamsValidation,
   updateProductSchema,
-} from '../schemas/ProductSchemas';
+} from '../schemas/product.schema';
 
 const productsRouter = Router();
 const productsController = new ProductsControllers();

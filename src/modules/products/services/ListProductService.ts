@@ -1,9 +1,9 @@
 import { Product } from '../database/entities/Product';
-import { productsRepositories } from '../database/repositories/ProductRepositories';
+import { productRepository } from '../database/repository/product.repository';
 
 export default class ListProductService {
   async execute(): Promise<Product[]> {
-    const products = await productsRepositories.find();
+    const products = await productRepository.find();
     return products;
   }
 }

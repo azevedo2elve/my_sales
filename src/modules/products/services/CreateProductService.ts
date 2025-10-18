@@ -1,6 +1,6 @@
 import AppError from '../../../shared/errors/AppError';
 import type { Product } from '../database/entities/Product';
-import { productsRepositories } from '../database/repositories/ProductRepositories';
+import { productRepository } from '../database/repository/product.repository';
 
 interface ICreateProduct {
   name: string;
@@ -10,19 +10,19 @@ interface ICreateProduct {
 
 export default class CreateProductService {
   async execute({ name, price, quantity }: ICreateProduct): Promise<Product> {
-    const productExists = await productsRepositories.findByName(name);
+    const productExists = await productRepository.findByName(name);
 
     if (productExists) {
       throw new AppError('There is already one product with this name', 409);
     }
 
-    const product = productsRepositories.create({
+    const product = productRepository.create({
       name,
       price,
       quantity,
     });
 
-    await productsRepositories.save(product);
+    await productRepository.save(product);
 
     return product;
   }
