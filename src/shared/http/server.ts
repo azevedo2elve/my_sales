@@ -16,7 +16,7 @@ AppDataSource.initialize()
     app.use(express.json());
 
     app.use(routes);
-    app.use(errors());
+    app.use(errors()); //middleware de erros do celebrate, tem que ficar abaixo das rotas, para a validação dos schemas funcionar
     app.use(ErrorHandleMiddleware.handleError);
 
     console.log('Connected to the database');
