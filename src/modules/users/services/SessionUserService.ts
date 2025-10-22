@@ -2,7 +2,7 @@ import { compare } from 'bcrypt';
 import AppError from '../../../shared/errors/AppError';
 import type { User } from '../database/entities/User';
 import { userRepository } from '../database/repositories/user.repository';
-import jwt from 'jsonwebtoken';
+import jwt, { type Secret } from 'jsonwebtoken';
 
 interface ISessionUser {
   email: string;
@@ -28,7 +28,7 @@ export default class SessionUserService {
       throw new AppError('Invalid email or password', 401);
     }
 
-    const token = jwt.sign({}, process.env.APP_SECRET as string, {
+    const token = jwt.sign({}, process.env.APP_SECRET as Secret, {
       subject: String(user.id),
       expiresIn: '1d',
     });
