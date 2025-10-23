@@ -6,3 +6,6 @@ build
 temp
 coverage
 ormconfig.js
+
+uploads/*
+!uploads/.gitkeep

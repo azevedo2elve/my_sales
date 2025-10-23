@@ -1,12 +1,15 @@
 import path from 'path';
 import multer, { type StorageEngine } from 'multer';
 import crypto from 'crypto';
+import { fileURLToPath } from 'url';
 
 interface IUploadConfig {
   directory: string;
   storage: StorageEngine;
 }
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const uploadFolder = path.resolve(__dirname, '..', '..', 'uploads');
 
 export default {
