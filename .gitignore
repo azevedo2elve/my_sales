@@ -7,5 +7,5 @@ temp
 coverage
 ormconfig.js
 
-uploads/*
+/uploads/*
 !uploads/.gitkeep
