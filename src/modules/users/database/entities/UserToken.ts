@@ -12,11 +12,11 @@ export default class UserToken {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'uuid' })
   @Generated('uuid')
   token: string;
 
-  @Column()
+  @Column({ type: 'integer' })
   user_id: number;
 
   @CreateDateColumn()
