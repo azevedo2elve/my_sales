@@ -1,10 +1,11 @@
 import express, { Router } from 'express';
-import productsRouter from '../../../modules/products/routes/product.routes';
-import usersRouter from '../../../modules/users/routes/user.routes';
-import sessionRouter from '../../../modules/users/routes/session.route';
-import avatarRouter from '../../../modules/users/routes/avatar.route';
+import productsRouter from '@modules/products/routes/product.routes';
+import usersRouter from '@modules/users/routes/user.routes';
+import sessionRouter from '@modules/users/routes/session.route';
+import avatarRouter from '@modules/users/routes/avatar.route';
 import uploadConfig from '@config/upload';
-import passwordRouter from '../../../modules/users/routes/password.route';
+import passwordRouter from '@modules/users/routes/password.route';
+import profileRouter from '@modules/users/routes/profile.route';
 
 const routes = Router();
 
@@ -17,6 +18,7 @@ routes.use('/users', usersRouter);
 routes.use('/sessions', sessionRouter);
 routes.use('/avatar', avatarRouter);
 routes.use('/files', express.static(uploadConfig.directory));
-routes.use('/password', passwordRouter);
+routes.use('/passwords', passwordRouter);
+routes.use('/profiles', profileRouter);
 
 export default routes;
