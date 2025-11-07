@@ -47,6 +47,6 @@ export class CreateUser1760699626606 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // Implementar o rollback aqui
+    await queryRunner.dropTable('users');
   }
 }

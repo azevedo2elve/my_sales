@@ -51,6 +51,6 @@ export class CreateUserToken1761243988815 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    // Implementar o rollback aqui
+    await queryRunner.dropTable('user_tokens');
   }
 }
