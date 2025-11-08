@@ -7,7 +7,7 @@ interface ICreateCustomer {
   email: string;
 }
 
-export default class CrreateCustomerService {
+export default class CreateCustomerService {
   async execute({ name, email }: ICreateCustomer): Promise<Customer> {
     const emailExists = await customerRepository.findByEmail(email);
 
