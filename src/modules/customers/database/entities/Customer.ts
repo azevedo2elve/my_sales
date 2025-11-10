@@ -11,15 +11,15 @@ export class Customer {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ type: 'text' })
   name: string;
 
-  @Column()
+  @Column({ type: 'text' })
   email: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
 }
