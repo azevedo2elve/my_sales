@@ -5,6 +5,7 @@ import {
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Customer } from '../../../customers/database/entities/Customer';
 import { OrdersProducts } from './OrdersProducts';
@@ -16,7 +17,7 @@ export class Order {
 
   @ManyToOne(() => Customer)
   @JoinColumn({ name: 'customer_id' })
-  customer: number;
+  customer: Customer;
 
   @OneToMany(() => OrdersProducts, orderProducts => orderProducts.order, {
     cascade: true,
@@ -26,6 +27,6 @@ export class Order {
   @CreateDateColumn({ type: 'timestamp' })
   created_at: Date;
 
-  @CreateDateColumn({ type: 'timestamp' })
+  @UpdateDateColumn({ type: 'timestamp' })
   updated_at: Date;
 }
