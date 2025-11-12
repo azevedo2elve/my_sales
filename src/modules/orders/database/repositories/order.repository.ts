@@ -32,6 +32,36 @@ export const orderRepository = AppDataSource.getRepository(Order).extend({
 
     await this.save(order);
 
-    return order;
+    // Criar os OrdersProducts separadamente
+    const orderProductsRepository = AppDataSource.getRepository(OrdersProducts);
+    const productRepository = AppDataSource.getRepository(Product);
+
+    const orderProducts = await Promise.all(
+      products.map(async productData => {
+        const product = await productRepository.findOneBy({
+          id: productData.product_id,
+        });
+        if (!product) {
+          throw new Error(
+            `Product with id ${productData.product_id} not found`,
+          );
+        }
+
+        return orderProductsRepository.create({
+          order,
+          product,
+          order_id: order.id,
+          product_id: productData.product_id,
+          quantity: productData.quantity,
+          price: productData.price,
+        });
+      }),
+    );
+
+    await orderProductsRepository.save(orderProducts);
+
+    // Recarregar o order com as relações
+    const completeOrder = await this.findById(order.id);
+    return completeOrder!;
   },
 });
