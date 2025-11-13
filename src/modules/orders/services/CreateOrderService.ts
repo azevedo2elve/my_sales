@@ -11,7 +11,7 @@ interface IOrderProduct {
 }
 
 interface ICreateOrder {
-  customer_id: string;
+  customer_id: number;
   products: IOrderProduct[];
 }
 
