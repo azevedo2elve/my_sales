@@ -7,7 +7,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Customer } from '../../../customers/database/entities/Customer';
+import { Customer } from '../../../customers/infra/database/entities/Customer';
 import { OrdersProducts } from './OrdersProducts';
 
 @Entity('orders')

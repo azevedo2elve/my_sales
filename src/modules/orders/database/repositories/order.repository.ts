@@ -1,6 +1,6 @@
 import AppDataSource from '../../../../shared/infra/typeorm/data-source';
 import { Order } from '../entities/Order';
-import { Customer } from '../../../customers/database/entities/Customer';
+import { Customer } from '../../../customers/infra/database/entities/Customer';
 import { OrdersProducts } from '../entities/OrdersProducts';
 import { Product } from '../../../products/database/entities/Product';
 

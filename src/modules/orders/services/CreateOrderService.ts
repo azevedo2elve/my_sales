@@ -1,5 +1,5 @@
 import AppError from '../../../shared/errors/AppError';
-import { customerRepository } from '../../customers/database/repositories/customer.repository';
+import { customerRepository } from '../../customers/infra/database/repositories/customer.repository';
 import type { Product } from '../../products/database/entities/Product';
 import { productRepository } from '../../products/database/repository/product.repository';
 import type { Order } from '../database/entities/Order';

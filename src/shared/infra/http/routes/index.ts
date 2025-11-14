@@ -6,7 +6,7 @@ import avatarRouter from '@modules/users/routes/avatar.route';
 import uploadConfig from '@config/upload';
 import passwordRouter from '@modules/users/routes/password.route';
 import profileRouter from '@modules/users/routes/profile.route';
-import customersRouter from '@modules/customers/routes/customer.routes';
+import customersRouter from '@modules/customers/infra/http/routes/customer.routes';
 import orderRouter from '@modules/orders/routes/order.route';
 
 const routes = Router();
