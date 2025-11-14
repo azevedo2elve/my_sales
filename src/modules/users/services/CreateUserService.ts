@@ -2,6 +2,7 @@ import { hash } from 'bcrypt';
 import AppError from '../../../shared/errors/AppError';
 import type { User } from '../database/entities/User';
 import { userRepository } from '../database/repositories/user.repository';
+import RedisCache from '../../../shared/cache/RedisCache';
 
 interface ICreateUser {
   name: string;
@@ -11,6 +12,7 @@ interface ICreateUser {
 
 export default class CreateUserService {
   async execute({ name, email, password }: ICreateUser): Promise<User> {
+    const redisCache = new RedisCache();
     const emailExist = await userRepository.findByEmail(email);
 
     if (emailExist) {
