@@ -16,7 +16,8 @@
     "migration:run": "tsx ./node_modules/typeorm/cli.js migration:run -d ./src/shared/infra/typeorm/data-source.ts",
     "migration:revert": "tsx ./node_modules/typeorm/cli.js migration:revert -d ./src/shared/infra/typeorm/data-source.ts",
     "migration:show": "tsx ./node_modules/typeorm/cli.js migration:show -d ./src/shared/infra/typeorm/data-source.ts",
-    "typeorm": "tsx ./node_modules/typeorm/cli.js"
+    "typeorm": "tsx ./node_modules/typeorm/cli.js",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -28,6 +29,7 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/ioredis": "^4.28.10",
+    "@types/jest": "^30.0.0",
     "@types/joi": "^17.2.2",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
@@ -38,7 +40,9 @@
     "@typescript-eslint/parser": "^8.45.0",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^10.1.8",
+    "jest": "^30.2.0",
     "prettier": "^3.6.2",
+    "ts-jest": "^29.4.5",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
@@ -62,6 +66,7 @@
     "rate-limiter-flexible": "^8.2.0",
     "redis": "^5.9.0",
     "reflect-metadata": "^0.2.2",
+    "tsyringe": "^4.4.0",
     "typeorm": "^0.3.27"
   }
 }
