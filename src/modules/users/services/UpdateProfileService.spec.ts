@@ -1,20 +1,23 @@
 import 'reflect-metadata';
 import AppError from '../../../shared/errors/AppError';
+import { userMock, userMock2 } from '../domain/factories/userFactory';
 import FakeUsersRepository from '../domain/repositories/fakes/FakeUsersRepository';
 import CreateUserService from './CreateUserService';
 import UpdateProfileService from './UpdateProfileService';
 
-describe('UpdateProfileService', () => {
-  it('should be able to update user profile', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const createUserService = new CreateUserService(fakeUsersRepository);
-    const updateProfileService = new UpdateProfileService(fakeUsersRepository);
+let fakeUsersRepository: FakeUsersRepository;
+let createUserService: CreateUserService;
+let updateProfileService: UpdateProfileService;
 
-    const user = await createUserService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
+describe('UpdateProfileService', () => {
+  beforeEach(() => {
+    fakeUsersRepository = new FakeUsersRepository();
+    createUserService = new CreateUserService(fakeUsersRepository);
+    updateProfileService = new UpdateProfileService(fakeUsersRepository);
+  });
+
+  it('should be able to update user profile', async () => {
+    const user = await createUserService.execute(userMock);
 
     const updatedUser = await updateProfileService.execute({
       user_id: user.id,
@@ -27,9 +30,6 @@ describe('UpdateProfileService', () => {
   });
 
   it('should not be able to update profile of non-existing user', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const updateProfileService = new UpdateProfileService(fakeUsersRepository);
-
     await expect(
       updateProfileService.execute({
         user_id: 999,
@@ -40,20 +40,13 @@ describe('UpdateProfileService', () => {
   });
 
   it('should not be able to update email to one already in use', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const createUserService = new CreateUserService(fakeUsersRepository);
-    const updateProfileService = new UpdateProfileService(fakeUsersRepository);
-
-    await createUserService.execute({
-      name: 'User 1',
+    const user1 = await createUserService.execute({
+      ...userMock,
       email: 'user1@example.com',
-      password: '123456',
     });
-
     const user2 = await createUserService.execute({
-      name: 'User 2',
+      ...userMock2,
       email: 'user2@example.com',
-      password: '123456',
     });
 
     await expect(
@@ -66,16 +59,7 @@ describe('UpdateProfileService', () => {
   });
 
   it('should be able to update password', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const createUserService = new CreateUserService(fakeUsersRepository);
-    const updateProfileService = new UpdateProfileService(fakeUsersRepository);
-
-    const user = await createUserService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
-
+    const user = await createUserService.execute(userMock);
     const oldPassword = user.password;
 
     const updatedUser = await updateProfileService.execute({
@@ -90,15 +74,7 @@ describe('UpdateProfileService', () => {
   });
 
   it('should not be able to update password without old password', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const createUserService = new CreateUserService(fakeUsersRepository);
-    const updateProfileService = new UpdateProfileService(fakeUsersRepository);
-
-    const user = await createUserService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
+    const user = await createUserService.execute(userMock);
 
     await expect(
       updateProfileService.execute({
@@ -111,15 +87,7 @@ describe('UpdateProfileService', () => {
   });
 
   it('should not be able to update password with wrong old password', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const createUserService = new CreateUserService(fakeUsersRepository);
-    const updateProfileService = new UpdateProfileService(fakeUsersRepository);
-
-    const user = await createUserService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
+    const user = await createUserService.execute(userMock);
 
     await expect(
       updateProfileService.execute({
@@ -133,15 +101,7 @@ describe('UpdateProfileService', () => {
   });
 
   it('should be able to update user keeping same email', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const createUserService = new CreateUserService(fakeUsersRepository);
-    const updateProfileService = new UpdateProfileService(fakeUsersRepository);
-
-    const user = await createUserService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
+    const user = await createUserService.execute(userMock);
 
     const updatedUser = await updateProfileService.execute({
       user_id: user.id,

@@ -1,29 +1,26 @@
 import 'reflect-metadata';
 import AppError from '../../../shared/errors/AppError';
+import { sessionMock, userMock } from '../domain/factories/userFactory';
 import FakeUsersRepository from '../domain/repositories/fakes/FakeUsersRepository';
 import CreateUserService from './CreateUserService';
 import SessionUserService from './SessionUserService';
 
+let fakeUsersRepository: FakeUsersRepository;
+let createUserService: CreateUserService;
+let sessionUserService: SessionUserService;
+
 describe('SessionUserService', () => {
   beforeEach(() => {
     process.env.APP_SECRET = 'test-secret';
+    fakeUsersRepository = new FakeUsersRepository();
+    createUserService = new CreateUserService(fakeUsersRepository);
+    sessionUserService = new SessionUserService(fakeUsersRepository);
   });
 
   it('should be able to authenticate user', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const createUserService = new CreateUserService(fakeUsersRepository);
-    const sessionUserService = new SessionUserService(fakeUsersRepository);
+    await createUserService.execute(userMock);
 
-    await createUserService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
-
-    const response = await sessionUserService.execute({
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
+    const response = await sessionUserService.execute(sessionMock);
 
     expect(response).toHaveProperty('token');
     expect(response.user).toHaveProperty('id');
@@ -31,27 +28,13 @@ describe('SessionUserService', () => {
   });
 
   it('should not be able to authenticate with non-existing user', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const sessionUserService = new SessionUserService(fakeUsersRepository);
-
     await expect(
-      sessionUserService.execute({
-        email: 'johndoe@example.com',
-        password: '123456',
-      }),
+      sessionUserService.execute(sessionMock),
     ).rejects.toBeInstanceOf(AppError);
   });
 
   it('should not be able to authenticate with wrong password', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const createUserService = new CreateUserService(fakeUsersRepository);
-    const sessionUserService = new SessionUserService(fakeUsersRepository);
-
-    await createUserService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
+    await createUserService.execute(userMock);
 
     await expect(
       sessionUserService.execute({

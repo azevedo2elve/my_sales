@@ -1,22 +1,22 @@
 import AppError from '../../../shared/errors/AppError';
+import { customerMock } from '../domain/factories/customerFactory';
 import FakeCustomerRepositories from '../domain/repositories/fakes/FakeCustomerRepositories';
-import UpdateCustomerService from './UpdateCustomerService';
 import CreateCustomerService from './CreateCustomerService';
+import UpdateCustomerService from './UpdateCustomerService';
+
+let fakeCustomerRepositories: FakeCustomerRepositories;
+let createCustomerService: CreateCustomerService;
+let updateCustomerService: UpdateCustomerService;
 
 describe('UpdateCustomerService', () => {
-  it('should be able to update a customer', async () => {
-    const fakeCustomerRepositories = new FakeCustomerRepositories();
-    const createCustomerService = new CreateCustomerService(
-      fakeCustomerRepositories,
-    );
-    const updateCustomerService = new UpdateCustomerService(
-      fakeCustomerRepositories,
-    );
+  beforeEach(() => {
+    fakeCustomerRepositories = new FakeCustomerRepositories();
+    createCustomerService = new CreateCustomerService(fakeCustomerRepositories);
+    updateCustomerService = new UpdateCustomerService(fakeCustomerRepositories);
+  });
 
-    const customer = await createCustomerService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-    });
+  it('should be able to update a customer', async () => {
+    const customer = await createCustomerService.execute(customerMock);
 
     const updatedCustomer = await updateCustomerService.execute({
       id: customer.id,
@@ -29,11 +29,6 @@ describe('UpdateCustomerService', () => {
   });
 
   it('should not be able to update a non-existing customer', async () => {
-    const fakeCustomerRepositories = new FakeCustomerRepositories();
-    const updateCustomerService = new UpdateCustomerService(
-      fakeCustomerRepositories,
-    );
-
     await expect(
       updateCustomerService.execute({
         id: 999,
@@ -44,18 +39,7 @@ describe('UpdateCustomerService', () => {
   });
 
   it('should not be able to update customer with email already in use', async () => {
-    const fakeCustomerRepositories = new FakeCustomerRepositories();
-    const createCustomerService = new CreateCustomerService(
-      fakeCustomerRepositories,
-    );
-    const updateCustomerService = new UpdateCustomerService(
-      fakeCustomerRepositories,
-    );
-
-    await createCustomerService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-    });
+    await createCustomerService.execute(customerMock);
 
     const customer2 = await createCustomerService.execute({
       name: 'Jane Doe',
@@ -72,18 +56,7 @@ describe('UpdateCustomerService', () => {
   });
 
   it('should be able to update customer keeping same email', async () => {
-    const fakeCustomerRepositories = new FakeCustomerRepositories();
-    const createCustomerService = new CreateCustomerService(
-      fakeCustomerRepositories,
-    );
-    const updateCustomerService = new UpdateCustomerService(
-      fakeCustomerRepositories,
-    );
-
-    const customer = await createCustomerService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-    });
+    const customer = await createCustomerService.execute(customerMock);
 
     const updatedCustomer = await updateCustomerService.execute({
       id: customer.id,

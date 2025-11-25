@@ -1,7 +1,8 @@
 import AppError from '../../../shared/errors/AppError';
+import { productMock } from '../domain/factories/productFactory';
 import FakeProductsRepository from '../domain/repositories/fakes/FakeProductsRepository';
-import ShowProductService from './ShowProductService';
 import CreateProductService from './CreateProductService';
+import ShowProductService from './ShowProductService';
 
 // Mock RedisCache
 jest.mock('../../../shared/cache/RedisCache', () => {
@@ -12,19 +13,19 @@ jest.mock('../../../shared/cache/RedisCache', () => {
   }));
 });
 
-describe('ShowProductService', () => {
-  it('should be able to show a product', async () => {
-    const fakeProductsRepository = new FakeProductsRepository();
-    const createProductService = new CreateProductService(
-      fakeProductsRepository,
-    );
-    const showProductService = new ShowProductService(fakeProductsRepository);
+let fakeProductsRepository: FakeProductsRepository;
+let createProductService: CreateProductService;
+let showProductService: ShowProductService;
 
-    const createdProduct = await createProductService.execute({
-      name: 'Product 1',
-      price: 10.99,
-      quantity: 100,
-    });
+describe('ShowProductService', () => {
+  beforeEach(() => {
+    fakeProductsRepository = new FakeProductsRepository();
+    createProductService = new CreateProductService(fakeProductsRepository);
+    showProductService = new ShowProductService(fakeProductsRepository);
+  });
+
+  it('should be able to show a product', async () => {
+    const createdProduct = await createProductService.execute(productMock);
 
     const product = await showProductService.execute({
       id: String(createdProduct.id),
@@ -36,9 +37,6 @@ describe('ShowProductService', () => {
   });
 
   it('should not be able to show a non-existing product', async () => {
-    const fakeProductsRepository = new FakeProductsRepository();
-    const showProductService = new ShowProductService(fakeProductsRepository);
-
     await expect(
       showProductService.execute({ id: '999' }),
     ).rejects.toBeInstanceOf(AppError);

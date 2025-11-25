@@ -1,37 +1,38 @@
 import 'reflect-metadata';
+import { userMock, userMock2 } from '../domain/factories/userFactory';
 import FakeUsersRepository from '../domain/repositories/fakes/FakeUsersRepository';
-import ListUserService from './ListUserService';
 import CreateUserService from './CreateUserService';
+import ListUserService from './ListUserService';
+
+let fakeUsersRepository: FakeUsersRepository;
+let createUserService: CreateUserService;
+let listUserService: ListUserService;
 
 describe('ListUserService', () => {
+  beforeEach(() => {
+    fakeUsersRepository = new FakeUsersRepository();
+    createUserService = new CreateUserService(fakeUsersRepository);
+    listUserService = new ListUserService(fakeUsersRepository);
+  });
+
   it('should be able to list users', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const createUserService = new CreateUserService(fakeUsersRepository);
-    const listUserService = new ListUserService(fakeUsersRepository);
-
     await createUserService.execute({
-      name: 'User 1',
+      ...userMock,
       email: 'user1@example.com',
-      password: '123456',
     });
-
     await createUserService.execute({
-      name: 'User 2',
+      ...userMock2,
       email: 'user2@example.com',
-      password: '654321',
     });
 
     const users = await listUserService.execute();
 
     expect(users).toHaveLength(2);
-    expect(users[0].name).toBe('User 1');
-    expect(users[1].name).toBe('User 2');
+    expect(users[0].email).toBe('user1@example.com');
+    expect(users[1].email).toBe('user2@example.com');
   });
 
   it('should return empty list when no users exist', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const listUserService = new ListUserService(fakeUsersRepository);
-
     const users = await listUserService.execute();
 
     expect(users).toHaveLength(0);

@@ -1,34 +1,34 @@
 import AppError from '../../../shared/errors/AppError';
+import { customerMock } from '../../customers/domain/factories/customerFactory';
 import FakeCustomerRepositories from '../../customers/domain/repositories/fakes/FakeCustomerRepositories';
+import { productMock } from '../../products/domain/factories/productFactory';
 import FakeProductsRepository from '../../products/domain/repositories/fakes/FakeProductsRepository';
 import FakeOrdersRepository from '../domain/repositories/fakes/FakeOrdersRepository';
 import CreateOrderService from './CreateOrderService';
 import { ShowOrderService } from './ShowOrderService';
 
-describe('ShowOrderService', () => {
-  it('should be able to show an order', async () => {
-    const fakeCustomerRepositories = new FakeCustomerRepositories();
-    const fakeProductsRepository = new FakeProductsRepository();
-    const fakeOrdersRepository = new FakeOrdersRepository();
+let fakeCustomerRepositories: FakeCustomerRepositories;
+let fakeProductsRepository: FakeProductsRepository;
+let fakeOrdersRepository: FakeOrdersRepository;
+let createOrderService: CreateOrderService;
+let showOrderService: ShowOrderService;
 
-    const createOrderService = new CreateOrderService(
+describe('ShowOrderService', () => {
+  beforeEach(() => {
+    fakeCustomerRepositories = new FakeCustomerRepositories();
+    fakeProductsRepository = new FakeProductsRepository();
+    fakeOrdersRepository = new FakeOrdersRepository();
+    createOrderService = new CreateOrderService(
       fakeCustomerRepositories,
       fakeProductsRepository,
       fakeOrdersRepository,
     );
+    showOrderService = new ShowOrderService(fakeOrdersRepository);
+  });
 
-    const showOrderService = new ShowOrderService(fakeOrdersRepository);
-
-    const customer = await fakeCustomerRepositories.create({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-    });
-
-    const product = await fakeProductsRepository.create({
-      name: 'Product 1',
-      price: 10.99,
-      quantity: 100,
-    });
+  it('should be able to show an order', async () => {
+    const customer = await fakeCustomerRepositories.create(customerMock);
+    const product = await fakeProductsRepository.create(productMock);
 
     const createdOrder = await createOrderService.execute({
       customer_id: customer.id,
@@ -43,9 +43,6 @@ describe('ShowOrderService', () => {
   });
 
   it('should not be able to show a non-existing order', async () => {
-    const fakeOrdersRepository = new FakeOrdersRepository();
-    const showOrderService = new ShowOrderService(fakeOrdersRepository);
-
     await expect(showOrderService.execute('999')).rejects.toBeInstanceOf(
       AppError,
     );

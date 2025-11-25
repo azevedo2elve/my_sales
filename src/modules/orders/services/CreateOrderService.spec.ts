@@ -1,38 +1,36 @@
 import 'reflect-metadata';
 import AppError from '../../../shared/errors/AppError';
+import { customerMock } from '../../customers/domain/factories/customerFactory';
 import FakeCustomerRepositories from '../../customers/domain/repositories/fakes/FakeCustomerRepositories';
+import {
+  productMock,
+  productMock2,
+} from '../../products/domain/factories/productFactory';
 import FakeProductsRepository from '../../products/domain/repositories/fakes/FakeProductsRepository';
 import FakeOrdersRepository from '../domain/repositories/fakes/FakeOrdersRepository';
 import CreateOrderService from './CreateOrderService';
 
-describe('CreateOrderService', () => {
-  it('should be able to create a new order', async () => {
-    const fakeCustomerRepositories = new FakeCustomerRepositories();
-    const fakeProductsRepository = new FakeProductsRepository();
-    const fakeOrdersRepository = new FakeOrdersRepository();
+let fakeCustomerRepositories: FakeCustomerRepositories;
+let fakeProductsRepository: FakeProductsRepository;
+let fakeOrdersRepository: FakeOrdersRepository;
+let createOrderService: CreateOrderService;
 
-    const createOrderService = new CreateOrderService(
+describe('CreateOrderService', () => {
+  beforeEach(() => {
+    fakeCustomerRepositories = new FakeCustomerRepositories();
+    fakeProductsRepository = new FakeProductsRepository();
+    fakeOrdersRepository = new FakeOrdersRepository();
+    createOrderService = new CreateOrderService(
       fakeCustomerRepositories,
       fakeProductsRepository,
       fakeOrdersRepository,
     );
+  });
 
-    const customer = await fakeCustomerRepositories.create({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-    });
-
-    const product1 = await fakeProductsRepository.create({
-      name: 'Product 1',
-      price: 10.99,
-      quantity: 100,
-    });
-
-    const product2 = await fakeProductsRepository.create({
-      name: 'Product 2',
-      price: 20.99,
-      quantity: 50,
-    });
+  it('should be able to create a new order', async () => {
+    const customer = await fakeCustomerRepositories.create(customerMock);
+    const product1 = await fakeProductsRepository.create(productMock);
+    const product2 = await fakeProductsRepository.create(productMock2);
 
     const order = await createOrderService.execute({
       customer_id: customer.id,
@@ -50,16 +48,6 @@ describe('CreateOrderService', () => {
   });
 
   it('should not be able to create order with non-existing customer', async () => {
-    const fakeCustomerRepositories = new FakeCustomerRepositories();
-    const fakeProductsRepository = new FakeProductsRepository();
-    const fakeOrdersRepository = new FakeOrdersRepository();
-
-    const createOrderService = new CreateOrderService(
-      fakeCustomerRepositories,
-      fakeProductsRepository,
-      fakeOrdersRepository,
-    );
-
     await expect(
       createOrderService.execute({
         customer_id: 999,
@@ -69,20 +57,7 @@ describe('CreateOrderService', () => {
   });
 
   it('should not be able to create order with non-existing product', async () => {
-    const fakeCustomerRepositories = new FakeCustomerRepositories();
-    const fakeProductsRepository = new FakeProductsRepository();
-    const fakeOrdersRepository = new FakeOrdersRepository();
-
-    const createOrderService = new CreateOrderService(
-      fakeCustomerRepositories,
-      fakeProductsRepository,
-      fakeOrdersRepository,
-    );
-
-    const customer = await fakeCustomerRepositories.create({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-    });
+    const customer = await fakeCustomerRepositories.create(customerMock);
 
     await expect(
       createOrderService.execute({
@@ -93,21 +68,7 @@ describe('CreateOrderService', () => {
   });
 
   it('should not be able to create order with product with insufficient quantity', async () => {
-    const fakeCustomerRepositories = new FakeCustomerRepositories();
-    const fakeProductsRepository = new FakeProductsRepository();
-    const fakeOrdersRepository = new FakeOrdersRepository();
-
-    const createOrderService = new CreateOrderService(
-      fakeCustomerRepositories,
-      fakeProductsRepository,
-      fakeOrdersRepository,
-    );
-
-    const customer = await fakeCustomerRepositories.create({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-    });
-
+    const customer = await fakeCustomerRepositories.create(customerMock);
     const product = await fakeProductsRepository.create({
       name: 'Product 1',
       price: 10.99,
@@ -123,26 +84,8 @@ describe('CreateOrderService', () => {
   });
 
   it('should update product quantity after creating order', async () => {
-    const fakeCustomerRepositories = new FakeCustomerRepositories();
-    const fakeProductsRepository = new FakeProductsRepository();
-    const fakeOrdersRepository = new FakeOrdersRepository();
-
-    const createOrderService = new CreateOrderService(
-      fakeCustomerRepositories,
-      fakeProductsRepository,
-      fakeOrdersRepository,
-    );
-
-    const customer = await fakeCustomerRepositories.create({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-    });
-
-    const product = await fakeProductsRepository.create({
-      name: 'Product 1',
-      price: 10.99,
-      quantity: 100,
-    });
+    const customer = await fakeCustomerRepositories.create(customerMock);
+    const product = await fakeProductsRepository.create(productMock);
 
     await createOrderService.execute({
       customer_id: customer.id,
@@ -155,26 +98,8 @@ describe('CreateOrderService', () => {
   });
 
   it('should not be able to create order with some non-existing products', async () => {
-    const fakeCustomerRepositories = new FakeCustomerRepositories();
-    const fakeProductsRepository = new FakeProductsRepository();
-    const fakeOrdersRepository = new FakeOrdersRepository();
-
-    const createOrderService = new CreateOrderService(
-      fakeCustomerRepositories,
-      fakeProductsRepository,
-      fakeOrdersRepository,
-    );
-
-    const customer = await fakeCustomerRepositories.create({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-    });
-
-    const product1 = await fakeProductsRepository.create({
-      name: 'Product 1',
-      price: 10.99,
-      quantity: 100,
-    });
+    const customer = await fakeCustomerRepositories.create(customerMock);
+    const product1 = await fakeProductsRepository.create(productMock);
 
     await expect(
       createOrderService.execute({

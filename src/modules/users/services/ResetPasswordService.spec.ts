@@ -1,27 +1,30 @@
 import 'reflect-metadata';
+import { addHours } from 'date-fns';
 import AppError from '../../../shared/errors/AppError';
+import { userMock } from '../domain/factories/userFactory';
 import FakeUsersRepository from '../domain/repositories/fakes/FakeUsersRepository';
 import FakeUserTokensRepository from '../domain/repositories/fakes/FakeUserTokensRepository';
 import CreateUserService from './CreateUserService';
 import ResetPasswordService from './ResetPasswordService';
-import { addHours } from 'date-fns';
+
+let fakeUsersRepository: FakeUsersRepository;
+let fakeUserTokensRepository: FakeUserTokensRepository;
+let createUserService: CreateUserService;
+let resetPasswordService: ResetPasswordService;
 
 describe('ResetPasswordService', () => {
-  it('should be able to reset password', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const fakeUserTokensRepository = new FakeUserTokensRepository();
-    const createUserService = new CreateUserService(fakeUsersRepository);
-    const resetPasswordService = new ResetPasswordService(
+  beforeEach(() => {
+    fakeUsersRepository = new FakeUsersRepository();
+    fakeUserTokensRepository = new FakeUserTokensRepository();
+    createUserService = new CreateUserService(fakeUsersRepository);
+    resetPasswordService = new ResetPasswordService(
       fakeUsersRepository,
       fakeUserTokensRepository,
     );
+  });
 
-    const user = await createUserService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
-
+  it('should be able to reset password', async () => {
+    const user = await createUserService.execute(userMock);
     const userToken = await fakeUserTokensRepository.generate(user.id);
     const oldPassword = user.password;
 
@@ -36,13 +39,6 @@ describe('ResetPasswordService', () => {
   });
 
   it('should not be able to reset password with non-existing token', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const fakeUserTokensRepository = new FakeUserTokensRepository();
-    const resetPasswordService = new ResetPasswordService(
-      fakeUsersRepository,
-      fakeUserTokensRepository,
-    );
-
     await expect(
       resetPasswordService.execute({
         token: 'non-existing-token',
@@ -52,13 +48,6 @@ describe('ResetPasswordService', () => {
   });
 
   it('should not be able to reset password with non-existing user', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const fakeUserTokensRepository = new FakeUserTokensRepository();
-    const resetPasswordService = new ResetPasswordService(
-      fakeUsersRepository,
-      fakeUserTokensRepository,
-    );
-
     const userToken = await fakeUserTokensRepository.generate(999);
 
     await expect(
@@ -70,20 +59,7 @@ describe('ResetPasswordService', () => {
   });
 
   it('should not be able to reset password with expired token', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const fakeUserTokensRepository = new FakeUserTokensRepository();
-    const createUserService = new CreateUserService(fakeUsersRepository);
-    const resetPasswordService = new ResetPasswordService(
-      fakeUsersRepository,
-      fakeUserTokensRepository,
-    );
-
-    const user = await createUserService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
-
+    const user = await createUserService.execute(userMock);
     const userToken = await fakeUserTokensRepository.generate(user.id);
 
     // Simulate token creation 3 hours ago

@@ -1,6 +1,7 @@
+import { productMock, productMock2 } from '../domain/factories/productFactory';
 import FakeProductsRepository from '../domain/repositories/fakes/FakeProductsRepository';
-import ListProductService from './ListProductService';
 import CreateProductService from './CreateProductService';
+import ListProductService from './ListProductService';
 
 // Mock RedisCache
 jest.mock('../../../shared/cache/RedisCache', () => {
@@ -11,25 +12,20 @@ jest.mock('../../../shared/cache/RedisCache', () => {
   }));
 });
 
+let fakeProductsRepository: FakeProductsRepository;
+let createProductService: CreateProductService;
+let listProductService: ListProductService;
+
 describe('ListProductService', () => {
+  beforeEach(() => {
+    fakeProductsRepository = new FakeProductsRepository();
+    createProductService = new CreateProductService(fakeProductsRepository);
+    listProductService = new ListProductService(fakeProductsRepository);
+  });
+
   it('should be able to list products', async () => {
-    const fakeProductsRepository = new FakeProductsRepository();
-    const createProductService = new CreateProductService(
-      fakeProductsRepository,
-    );
-    const listProductService = new ListProductService(fakeProductsRepository);
-
-    await createProductService.execute({
-      name: 'Product 1',
-      price: 10.99,
-      quantity: 100,
-    });
-
-    await createProductService.execute({
-      name: 'Product 2',
-      price: 20.99,
-      quantity: 50,
-    });
+    await createProductService.execute(productMock);
+    await createProductService.execute(productMock2);
 
     const products = await listProductService.execute();
 
@@ -39,9 +35,6 @@ describe('ListProductService', () => {
   });
 
   it('should return empty list when no products exist', async () => {
-    const fakeProductsRepository = new FakeProductsRepository();
-    const listProductService = new ListProductService(fakeProductsRepository);
-
     const products = await listProductService.execute();
 
     expect(products).toHaveLength(0);

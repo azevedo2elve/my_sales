@@ -1,7 +1,8 @@
 import AppError from '../../../shared/errors/AppError';
+import { productMock } from '../domain/factories/productFactory';
 import FakeProductsRepository from '../domain/repositories/fakes/FakeProductsRepository';
-import DeleteProductService from './DeleteProductService';
 import CreateProductService from './CreateProductService';
+import DeleteProductService from './DeleteProductService';
 
 // Mock RedisCache
 jest.mock('../../../shared/cache/RedisCache', () => {
@@ -12,21 +13,19 @@ jest.mock('../../../shared/cache/RedisCache', () => {
   }));
 });
 
-describe('DeleteProductService', () => {
-  it('should be able to delete a product', async () => {
-    const fakeProductsRepository = new FakeProductsRepository();
-    const createProductService = new CreateProductService(
-      fakeProductsRepository,
-    );
-    const deleteProductService = new DeleteProductService(
-      fakeProductsRepository,
-    );
+let fakeProductsRepository: FakeProductsRepository;
+let createProductService: CreateProductService;
+let deleteProductService: DeleteProductService;
 
-    const product = await createProductService.execute({
-      name: 'Product 1',
-      price: 10.99,
-      quantity: 100,
-    });
+describe('DeleteProductService', () => {
+  beforeEach(() => {
+    fakeProductsRepository = new FakeProductsRepository();
+    createProductService = new CreateProductService(fakeProductsRepository);
+    deleteProductService = new DeleteProductService(fakeProductsRepository);
+  });
+
+  it('should be able to delete a product', async () => {
+    const product = await createProductService.execute(productMock);
 
     await deleteProductService.execute({ id: String(product.id) });
 
@@ -36,11 +35,6 @@ describe('DeleteProductService', () => {
   });
 
   it('should not be able to delete a non-existing product', async () => {
-    const fakeProductsRepository = new FakeProductsRepository();
-    const deleteProductService = new DeleteProductService(
-      fakeProductsRepository,
-    );
-
     await expect(
       deleteProductService.execute({ id: '999' }),
     ).rejects.toBeInstanceOf(AppError);

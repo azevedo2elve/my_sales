@@ -1,17 +1,21 @@
 import UserToken from '../../../database/entities/UserToken';
+import type {
+  IUserTokensRepository,
+  IUserToken,
+} from '../IUserTokensRepository';
 import { v4 as uuidv4 } from 'uuid';
 
-export default class FakeUserTokensRepository {
+export default class FakeUserTokensRepository implements IUserTokensRepository {
   private userTokens: UserToken[] = [];
 
-  public async findByToken(token: string): Promise<UserToken | null> {
+  public async findByToken(token: string): Promise<IUserToken | null> {
     const userToken = this.userTokens.find(
       findToken => findToken.token === token,
     );
     return userToken || null;
   }
 
-  public async generate(user_id: number): Promise<UserToken> {
+  public async generate(user_id: number): Promise<IUserToken> {
     const userToken = new UserToken();
 
     userToken.id = this.userTokens.length + 1;

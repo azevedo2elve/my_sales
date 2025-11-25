@@ -1,4 +1,5 @@
 import AppError from '../../../shared/errors/AppError';
+import { productMock } from '../domain/factories/productFactory';
 import FakeProductsRepository from '../domain/repositories/fakes/FakeProductsRepository';
 import CreateProductService from './CreateProductService';
 
@@ -11,18 +12,17 @@ jest.mock('../../../shared/cache/RedisCache', () => {
   }));
 });
 
-describe('CreateProductService', () => {
-  it('should be able to create a new product', async () => {
-    const fakeProductsRepository = new FakeProductsRepository();
-    const createProductService = new CreateProductService(
-      fakeProductsRepository,
-    );
+let fakeProductsRepository: FakeProductsRepository;
+let createProductService: CreateProductService;
 
-    const product = await createProductService.execute({
-      name: 'Product 1',
-      price: 10.99,
-      quantity: 100,
-    });
+describe('CreateProductService', () => {
+  beforeEach(() => {
+    fakeProductsRepository = new FakeProductsRepository();
+    createProductService = new CreateProductService(fakeProductsRepository);
+  });
+
+  it('should be able to create a new product', async () => {
+    const product = await createProductService.execute(productMock);
 
     expect(product).toHaveProperty('id');
     expect(product.name).toBe('Product 1');
@@ -31,23 +31,10 @@ describe('CreateProductService', () => {
   });
 
   it('should not be able to create a product with existing name', async () => {
-    const fakeProductsRepository = new FakeProductsRepository();
-    const createProductService = new CreateProductService(
-      fakeProductsRepository,
-    );
-
-    await createProductService.execute({
-      name: 'Product 1',
-      price: 10.99,
-      quantity: 100,
-    });
+    await createProductService.execute(productMock);
 
     await expect(
-      createProductService.execute({
-        name: 'Product 1',
-        price: 15.99,
-        quantity: 50,
-      }),
+      createProductService.execute(productMock),
     ).rejects.toBeInstanceOf(AppError);
   });
 });

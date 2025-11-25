@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 import AppError from '../../../shared/errors/AppError';
+import { userMock } from '../domain/factories/userFactory';
 import FakeUsersRepository from '../domain/repositories/fakes/FakeUsersRepository';
 import UpdateUserAvatarService from './UpdateUserAvatarService';
-import type { IUser } from '../domain/models/IUser';
 
 jest.mock('fs', () => ({
   promises: {
@@ -24,18 +24,17 @@ jest.mock('@config/upload', () => ({
   },
 }));
 
-describe('UpdateUserAvatarService', () => {
-  it('should be able to update user avatar', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const updateUserAvatarService = new UpdateUserAvatarService(
-      fakeUsersRepository,
-    );
+let fakeUsersRepository: FakeUsersRepository;
+let updateUserAvatarService: UpdateUserAvatarService;
 
-    const user = await fakeUsersRepository.create({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
+describe('UpdateUserAvatarService', () => {
+  beforeEach(() => {
+    fakeUsersRepository = new FakeUsersRepository();
+    updateUserAvatarService = new UpdateUserAvatarService(fakeUsersRepository);
+  });
+
+  it('should be able to update user avatar', async () => {
+    const user = await fakeUsersRepository.create(userMock);
 
     const updatedUser = await updateUserAvatarService.execute({
       userId: user.id,
@@ -46,11 +45,6 @@ describe('UpdateUserAvatarService', () => {
   });
 
   it('should not be able to update avatar of non-existing user', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const updateUserAvatarService = new UpdateUserAvatarService(
-      fakeUsersRepository,
-    );
-
     await expect(
       updateUserAvatarService.execute({
         userId: 999,
@@ -60,16 +54,7 @@ describe('UpdateUserAvatarService', () => {
   });
 
   it('should delete old avatar when updating to new one', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const updateUserAvatarService = new UpdateUserAvatarService(
-      fakeUsersRepository,
-    );
-
-    const user = await fakeUsersRepository.create({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
+    const user = await fakeUsersRepository.create(userMock);
 
     await updateUserAvatarService.execute({
       userId: user.id,

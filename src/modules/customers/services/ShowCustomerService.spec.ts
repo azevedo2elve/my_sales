@@ -1,22 +1,22 @@
 import AppError from '../../../shared/errors/AppError';
+import { customerMock } from '../domain/factories/customerFactory';
 import FakeCustomerRepositories from '../domain/repositories/fakes/FakeCustomerRepositories';
-import ShowCustomerService from './ShowCustomerService';
 import CreateCustomerService from './CreateCustomerService';
+import ShowCustomerService from './ShowCustomerService';
+
+let fakeCustomerRepositories: FakeCustomerRepositories;
+let createCustomerService: CreateCustomerService;
+let showCustomerService: ShowCustomerService;
 
 describe('ShowCustomerService', () => {
-  it('should be able to show a customer', async () => {
-    const fakeCustomerRepositories = new FakeCustomerRepositories();
-    const createCustomerService = new CreateCustomerService(
-      fakeCustomerRepositories,
-    );
-    const showCustomerService = new ShowCustomerService(
-      fakeCustomerRepositories,
-    );
+  beforeEach(() => {
+    fakeCustomerRepositories = new FakeCustomerRepositories();
+    createCustomerService = new CreateCustomerService(fakeCustomerRepositories);
+    showCustomerService = new ShowCustomerService(fakeCustomerRepositories);
+  });
 
-    const createdCustomer = await createCustomerService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-    });
+  it('should be able to show a customer', async () => {
+    const createdCustomer = await createCustomerService.execute(customerMock);
 
     const customer = await showCustomerService.execute({
       id: createdCustomer.id,
@@ -28,11 +28,6 @@ describe('ShowCustomerService', () => {
   });
 
   it('should not be able to show a non-existing customer', async () => {
-    const fakeCustomerRepositories = new FakeCustomerRepositories();
-    const showCustomerService = new ShowCustomerService(
-      fakeCustomerRepositories,
-    );
-
     await expect(
       showCustomerService.execute({ id: 999 }),
     ).rejects.toBeInstanceOf(AppError);

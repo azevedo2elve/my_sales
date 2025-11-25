@@ -1,18 +1,27 @@
+import { hash } from 'bcrypt';
 import 'reflect-metadata';
 import AppError from '../../../shared/errors/AppError';
+import { userMock, userMock2 } from '../domain/factories/userFactory';
 import FakeUsersRepository from '../domain/repositories/fakes/FakeUsersRepository';
 import CreateUserService from './CreateUserService';
 
-describe('CreateUserService', () => {
-  it('should be able to create a new user', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const createUserService = new CreateUserService(fakeUsersRepository);
+jest.mock('bcrypt', () => ({
+  hash: jest.fn(),
+}));
 
-    const user = await createUserService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
+let fakeUsersRepository: FakeUsersRepository;
+let createUserService: CreateUserService;
+
+describe('CreateUserService', () => {
+  beforeEach(() => {
+    (hash as jest.Mock).mockResolvedValue('hashed-password');
+
+    fakeUsersRepository = new FakeUsersRepository();
+    createUserService = new CreateUserService(fakeUsersRepository);
+  });
+
+  it('should be able to create a new user', async () => {
+    const user = await createUserService.execute(userMock);
 
     expect(user).toHaveProperty('id');
     expect(user.name).toBe('John Doe');
@@ -20,34 +29,17 @@ describe('CreateUserService', () => {
   });
 
   it('should not be able to create a user with existing email', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const createUserService = new CreateUserService(fakeUsersRepository);
-
-    await createUserService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
+    await createUserService.execute(userMock);
 
     await expect(
-      createUserService.execute({
-        name: 'Jane Doe',
-        email: 'johndoe@example.com',
-        password: '654321',
-      }),
+      createUserService.execute({ ...userMock2, email: userMock.email }),
     ).rejects.toBeInstanceOf(AppError);
   });
 
   it('should hash user password', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const createUserService = new CreateUserService(fakeUsersRepository);
-
-    const user = await createUserService.execute({
-      name: 'John Doe',
-      email: 'johndoe@example.com',
-      password: '123456',
-    });
+    const user = await createUserService.execute(userMock);
 
     expect(user.password).not.toBe('123456');
+    expect(user.password).toBe('hashed-password');
   });
 });

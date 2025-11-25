@@ -1,7 +1,8 @@
 import AppError from '../../../shared/errors/AppError';
+import { productMock, productMock2 } from '../domain/factories/productFactory';
 import FakeProductsRepository from '../domain/repositories/fakes/FakeProductsRepository';
-import UpdateProductService from './UpdateProductService';
 import CreateProductService from './CreateProductService';
+import UpdateProductService from './UpdateProductService';
 
 // Mock RedisCache
 jest.mock('../../../shared/cache/RedisCache', () => {
@@ -12,21 +13,19 @@ jest.mock('../../../shared/cache/RedisCache', () => {
   }));
 });
 
-describe('UpdateProductService', () => {
-  it('should be able to update a product', async () => {
-    const fakeProductsRepository = new FakeProductsRepository();
-    const createProductService = new CreateProductService(
-      fakeProductsRepository,
-    );
-    const updateProductService = new UpdateProductService(
-      fakeProductsRepository,
-    );
+let fakeProductsRepository: FakeProductsRepository;
+let createProductService: CreateProductService;
+let updateProductService: UpdateProductService;
 
-    const product = await createProductService.execute({
-      name: 'Product 1',
-      price: 10.99,
-      quantity: 100,
-    });
+describe('UpdateProductService', () => {
+  beforeEach(() => {
+    fakeProductsRepository = new FakeProductsRepository();
+    createProductService = new CreateProductService(fakeProductsRepository);
+    updateProductService = new UpdateProductService(fakeProductsRepository);
+  });
+
+  it('should be able to update a product', async () => {
+    const product = await createProductService.execute(productMock);
 
     const updatedProduct = await updateProductService.execute({
       id: String(product.id),
@@ -41,11 +40,6 @@ describe('UpdateProductService', () => {
   });
 
   it('should not be able to update a non-existing product', async () => {
-    const fakeProductsRepository = new FakeProductsRepository();
-    const updateProductService = new UpdateProductService(
-      fakeProductsRepository,
-    );
-
     await expect(
       updateProductService.execute({
         id: '999',
@@ -57,25 +51,8 @@ describe('UpdateProductService', () => {
   });
 
   it('should not be able to update product with name already in use', async () => {
-    const fakeProductsRepository = new FakeProductsRepository();
-    const createProductService = new CreateProductService(
-      fakeProductsRepository,
-    );
-    const updateProductService = new UpdateProductService(
-      fakeProductsRepository,
-    );
-
-    await createProductService.execute({
-      name: 'Product 1',
-      price: 10.99,
-      quantity: 100,
-    });
-
-    const product2 = await createProductService.execute({
-      name: 'Product 2',
-      price: 20.99,
-      quantity: 50,
-    });
+    await createProductService.execute(productMock);
+    const product2 = await createProductService.execute(productMock2);
 
     await expect(
       updateProductService.execute({
@@ -88,19 +65,7 @@ describe('UpdateProductService', () => {
   });
 
   it('should be able to update product keeping same name', async () => {
-    const fakeProductsRepository = new FakeProductsRepository();
-    const createProductService = new CreateProductService(
-      fakeProductsRepository,
-    );
-    const updateProductService = new UpdateProductService(
-      fakeProductsRepository,
-    );
-
-    const product = await createProductService.execute({
-      name: 'Product 1',
-      price: 10.99,
-      quantity: 100,
-    });
+    const product = await createProductService.execute(productMock);
 
     const updatedProduct = await updateProductService.execute({
       id: String(product.id),

@@ -1,17 +1,19 @@
 import FakeCustomerRepositories from '../domain/repositories/fakes/FakeCustomerRepositories';
-import ListCustomerService from './ListCustomerService';
 import CreateCustomerService from './CreateCustomerService';
+import ListCustomerService from './ListCustomerService';
+
+let fakeCustomerRepositories: FakeCustomerRepositories;
+let createCustomerService: CreateCustomerService;
+let listCustomerService: ListCustomerService;
 
 describe('ListCustomerService', () => {
-  it('should be able to list customers with pagination', async () => {
-    const fakeCustomerRepositories = new FakeCustomerRepositories();
-    const createCustomerService = new CreateCustomerService(
-      fakeCustomerRepositories,
-    );
-    const listCustomerService = new ListCustomerService(
-      fakeCustomerRepositories,
-    );
+  beforeEach(() => {
+    fakeCustomerRepositories = new FakeCustomerRepositories();
+    createCustomerService = new CreateCustomerService(fakeCustomerRepositories);
+    listCustomerService = new ListCustomerService(fakeCustomerRepositories);
+  });
 
+  it('should be able to list customers with pagination', async () => {
     await createCustomerService.execute({
       name: 'Customer 1',
       email: 'customer1@example.com',
@@ -39,11 +41,6 @@ describe('ListCustomerService', () => {
   });
 
   it('should return empty list when no customers exist', async () => {
-    const fakeCustomerRepositories = new FakeCustomerRepositories();
-    const listCustomerService = new ListCustomerService(
-      fakeCustomerRepositories,
-    );
-
     const result = await listCustomerService.execute();
 
     expect(result.data).toHaveLength(0);
