@@ -17,7 +17,7 @@
     "migration:revert": "tsx ./node_modules/typeorm/cli.js migration:revert -d ./src/shared/infra/typeorm/data-source.ts",
     "migration:show": "tsx ./node_modules/typeorm/cli.js migration:show -d ./src/shared/infra/typeorm/data-source.ts",
     "typeorm": "tsx ./node_modules/typeorm/cli.js",
-    "test": "jest"
+    "test": "jest --no-coverage"
   },
   "keywords": [],
   "author": "",
