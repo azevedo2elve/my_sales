@@ -1,19 +1,19 @@
+import { inject, injectable } from 'tsyringe';
 import { hash } from 'bcrypt';
 import AppError from '../../../shared/errors/AppError';
-import type { User } from '../database/entities/User';
-import { userRepository } from '../database/repositories/user.repository';
-import RedisCache from '../../../shared/cache/RedisCache';
+import type { IUser } from '../domain/models/IUser';
+import type { ICreateUser } from '../domain/models/ICreateUser';
+import type { IUsersRepository } from '../domain/repositories/IUsersRepository';
 
-interface ICreateUser {
-  name: string;
-  email: string;
-  password: string;
-}
-
+@injectable()
 export default class CreateUserService {
-  async execute({ name, email, password }: ICreateUser): Promise<User> {
-    const redisCache = new RedisCache();
-    const emailExist = await userRepository.findByEmail(email);
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository,
+  ) {}
+
+  async execute({ name, email, password }: ICreateUser): Promise<IUser> {
+    const emailExist = await this.usersRepository.findByEmail(email);
 
     if (emailExist) {
       throw new AppError('Email address already used.', 409);
@@ -21,13 +21,11 @@ export default class CreateUserService {
 
     const hashedPassword = await hash(password, 10);
 
-    const user = userRepository.create({
+    const user = await this.usersRepository.create({
       name,
       email,
       password: hashedPassword,
     });
-
-    await userRepository.save(user);
 
     return user;
   }

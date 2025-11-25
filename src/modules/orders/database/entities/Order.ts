@@ -9,9 +9,10 @@ import {
 } from 'typeorm';
 import { Customer } from '../../../customers/infra/database/entities/Customer';
 import { OrdersProducts } from './OrdersProducts';
+import type { IOrder } from '../../domain/models/IOrder';
 
 @Entity('orders')
-export class Order {
+export class Order implements IOrder {
   @PrimaryGeneratedColumn()
   id: number;
 

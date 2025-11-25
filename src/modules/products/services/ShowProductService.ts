@@ -1,14 +1,21 @@
+import { inject, injectable } from 'tsyringe';
 import AppError from '../../../shared/errors/AppError';
-import type { Product } from '../database/entities/Product';
-import { productRepository } from '../database/repository/product.repository';
+import type { IProduct } from '../domain/models/IProduct';
+import type { IProductsRepository } from '../domain/repositories/IProductsRepository';
 
 interface IShowProduct {
   id: string;
 }
 
+@injectable()
 export default class ShowProductService {
-  async execute({ id }: IShowProduct): Promise<Product> {
-    const product = await productRepository.findById(id);
+  constructor(
+    @inject('ProductsRepository')
+    private productsRepository: IProductsRepository,
+  ) {}
+
+  async execute({ id }: IShowProduct): Promise<IProduct> {
+    const product = await this.productsRepository.findById(Number(id));
 
     if (!product) {
       throw new AppError('Product not found.', 404);

@@ -1,4 +1,5 @@
 import type { Request, Response } from 'express';
+import { container } from 'tsyringe';
 import ListProductService from '../services/ListProductService';
 import ShowProductService from '../services/ShowProductService';
 import CreateProductService from '../services/CreateProductService';
@@ -7,21 +8,21 @@ import DeleteProductService from '../services/DeleteProductService';
 
 export default class ProductsControllers {
   async index(request: Request, response: Response): Promise<Response> {
-    const listProductsService = new ListProductService();
+    const listProductsService = container.resolve(ListProductService);
     const products = await listProductsService.execute();
     return response.json(products);
   }
 
   async show(request: Request, response: Response): Promise<Response> {
     const { id } = request.params;
-    const showProductService = new ShowProductService();
+    const showProductService = container.resolve(ShowProductService);
     const products = await showProductService.execute({ id });
     return response.json(products);
   }
 
   async create(request: Request, response: Response): Promise<Response> {
     const { name, price, quantity } = request.body;
-    const createProductService = new CreateProductService();
+    const createProductService = container.resolve(CreateProductService);
     const product = await createProductService.execute({
       name,
       price,
@@ -33,7 +34,7 @@ export default class ProductsControllers {
   async update(request: Request, response: Response): Promise<Response> {
     const { id } = request.params;
     const { name, price, quantity } = request.body;
-    const updateProductService = new UpdateProductService();
+    const updateProductService = container.resolve(UpdateProductService);
     const product = await updateProductService.execute({
       id,
       name,
@@ -45,7 +46,7 @@ export default class ProductsControllers {
 
   async delete(request: Request, response: Response): Promise<Response> {
     const { id } = request.params;
-    const deleteProductService = new DeleteProductService();
+    const deleteProductService = container.resolve(DeleteProductService);
     await deleteProductService.execute({ id });
     return response.status(204).send([]);
   }

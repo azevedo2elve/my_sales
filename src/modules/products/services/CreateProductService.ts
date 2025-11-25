@@ -1,30 +1,30 @@
+import { inject, injectable } from 'tsyringe';
 import RedisCache from '../../../shared/cache/RedisCache';
 import AppError from '../../../shared/errors/AppError';
-import type { Product } from '../database/entities/Product';
-import { productRepository } from '../database/repository/product.repository';
+import type { IProduct } from '../domain/models/IProduct';
+import type { ICreateProduct } from '../domain/models/ICreateProduct';
+import type { IProductsRepository } from '../domain/repositories/IProductsRepository';
 
-interface ICreateProduct {
-  name: string;
-  price: number;
-  quantity: number;
-}
-
+@injectable()
 export default class CreateProductService {
-  async execute({ name, price, quantity }: ICreateProduct): Promise<Product> {
+  constructor(
+    @inject('ProductsRepository')
+    private productsRepository: IProductsRepository,
+  ) {}
+
+  async execute({ name, price, quantity }: ICreateProduct): Promise<IProduct> {
     const redisCache = new RedisCache();
-    const productExists = await productRepository.findByName(name);
+    const productExists = await this.productsRepository.findByName(name);
 
     if (productExists) {
       throw new AppError('There is already one product with this name', 409);
     }
 
-    const product = productRepository.create({
+    const product = await this.productsRepository.create({
       name,
       price,
       quantity,
     });
-
-    await productRepository.save(product);
 
     await redisCache.invalidate('api-vendas-PRODUCT_LIST');
 

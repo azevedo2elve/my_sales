@@ -1,17 +1,24 @@
+import { inject, injectable } from 'tsyringe';
 import RedisCache from '../../../shared/cache/RedisCache';
-import { Product } from '../database/entities/Product';
-import { productRepository } from '../database/repository/product.repository';
+import type { IProduct } from '../domain/models/IProduct';
+import type { IProductsRepository } from '../domain/repositories/IProductsRepository';
 
+@injectable()
 export default class ListProductService {
-  async execute(): Promise<Product[]> {
+  constructor(
+    @inject('ProductsRepository')
+    private productsRepository: IProductsRepository,
+  ) {}
+
+  async execute(): Promise<IProduct[]> {
     const redisCache = new RedisCache();
 
-    let products = await redisCache.recover<Product[]>(
+    let products = await redisCache.recover<IProduct[]>(
       'api-vendas-PRODUCT_LIST',
     );
 
     if (!products) {
-      products = await productRepository.find();
+      products = await this.productsRepository.find();
 
       await redisCache.save(
         'api-vendas-PRODUCT_LIST',
