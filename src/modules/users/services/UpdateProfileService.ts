@@ -1,7 +1,8 @@
+import { inject, injectable } from 'tsyringe';
 import { compare, hash } from 'bcrypt';
 import AppError from '../../../shared/errors/AppError';
 import type { User } from '../database/entities/User';
-import { userRepository } from '../database/repositories/user.repository';
+import type { IUsersRepository } from '../domain/repositories/IUsersRepository';
 
 interface IUpdateProfile {
   user_id: number;
@@ -11,7 +12,13 @@ interface IUpdateProfile {
   old_password?: string;
 }
 
+@injectable()
 export default class UpdateProfileService {
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository,
+  ) {}
+
   async execute({
     user_id,
     name,
@@ -19,16 +26,16 @@ export default class UpdateProfileService {
     password,
     old_password,
   }: IUpdateProfile): Promise<User> {
-    const user = await userRepository.findById(user_id);
+    const user = await this.usersRepository.findById(user_id);
 
     if (!user) {
       throw new AppError('User not found', 404);
     }
 
     if (email) {
-      const userUpdateEmail = await userRepository.findByEmail(email);
+      const userUpdateEmail = await this.usersRepository.findByEmail(email);
 
-      if (userUpdateEmail) {
+      if (userUpdateEmail && userUpdateEmail.id !== user.id) {
         throw new AppError('There is already one user with this email.', 409);
       }
 
@@ -53,8 +60,8 @@ export default class UpdateProfileService {
       user.name = name;
     }
 
-    await userRepository.save(user);
+    await this.usersRepository.save(user);
 
-    return user;
+    return user as User;
   }
 }

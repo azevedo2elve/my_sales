@@ -20,12 +20,14 @@ const config: Config = {
     '^@shared/(.*)$': '<rootDir>/src/shared/$1',
   },
   collectCoverageFrom: [
-    '<rootDir>/src/**/*.ts',
-    '!<rootDir>/src/**/*.spec.ts',
-    '!<rootDir>/src/**/*.test.ts',
-    '!<rootDir>/src/@types/**',
-    '!<rootDir>/src/shared/infra/typeorm/migrations/**',
+    '<rootDir>/src/modules/**/services/*.ts',
+    // '<rootDir>/src/**/*.ts',
+    // '!<rootDir>/src/**/*.spec.ts',
+    // '!<rootDir>/src/**/*.test.ts',
+    // '!<rootDir>/src/@types/**',
+    // '!<rootDir>/src/shared/infra/typeorm/migrations/**',
   ],
+  coverageReporters: ['lcov', 'text'],
 };
 
 export default config;

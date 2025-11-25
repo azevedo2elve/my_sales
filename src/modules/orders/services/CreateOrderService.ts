@@ -75,12 +75,15 @@ export default class CreateOrderService {
 
     const { order_products } = order;
 
-    const updateProductQuantity = order_products.map(product => ({
-      id: product.product_id,
-      quantity:
-        existsProducts.find(p => p.id === product.product_id)!.quantity -
-        product.quantity,
-    }));
+    const updateProductQuantity = order_products.map(product => {
+      const existingProduct = existsProducts.find(
+        p => p.id === product.product_id,
+      )!;
+      return {
+        ...existingProduct,
+        quantity: existingProduct.quantity - product.quantity,
+      };
+    });
 
     await this.productsRepository.save(updateProductQuantity);
 

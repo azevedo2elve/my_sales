@@ -1,7 +1,8 @@
+import { inject, injectable } from 'tsyringe';
 import { compare } from 'bcrypt';
 import AppError from '../../../shared/errors/AppError';
 import type { User } from '../database/entities/User';
-import { userRepository } from '../database/repositories/user.repository';
+import type { IUsersRepository } from '../domain/repositories/IUsersRepository';
 import jwt, { type Secret } from 'jsonwebtoken';
 
 interface ISessionUser {
@@ -14,9 +15,15 @@ interface ISessionResponse {
   token: string;
 }
 
+@injectable()
 export default class SessionUserService {
+  constructor(
+    @inject('UsersRepository')
+    private usersRepository: IUsersRepository,
+  ) {}
+
   async execute({ email, password }: ISessionUser): Promise<ISessionResponse> {
-    const user = await userRepository.findByEmail(email);
+    const user = await this.usersRepository.findByEmail(email);
 
     if (!user) {
       throw new AppError('Invalid email or password', 401);
@@ -34,7 +41,7 @@ export default class SessionUserService {
     });
 
     return {
-      user,
+      user: user as User,
       token,
     };
   }

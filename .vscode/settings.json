@@ -15,5 +15,6 @@
   "prettier.printWidth": 80,
   "prettier.tabWidth": 2,
   "prettier.singleQuote": true,
-  "prettier.trailingComma": "all"
+  "prettier.trailingComma": "all",
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
