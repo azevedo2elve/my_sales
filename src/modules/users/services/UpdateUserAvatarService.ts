@@ -3,13 +3,9 @@ import path from 'path';
 import AppError from '../../../shared/errors/AppError';
 import type { User } from '../database/entities/User';
 import type { IUsersRepository } from '../domain/repositories/IUsersRepository';
+import type { IUpdateUserAvatar } from '../domain/models/IUpdateUserAvatar';
 import uploadConfig from '@config/upload';
 import fs from 'fs';
-
-interface IUpdateUserAvatar {
-  userId: number;
-  avatarFilename: string;
-}
 
 @injectable()
 export default class UpdateUserAvatarService {

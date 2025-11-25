@@ -2,10 +2,7 @@ import { inject, injectable } from 'tsyringe';
 import AppError from '@shared/errors/AppError';
 import type { User } from '../database/entities/User';
 import type { IUsersRepository } from '../domain/repositories/IUsersRepository';
-
-interface IShowProfile {
-  user_id: number;
-}
+import type { IShowProfile } from '../domain/models/IShowProfile';
 
 @injectable()
 export default class ShowProfileService {

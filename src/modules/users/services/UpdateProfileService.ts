@@ -3,14 +3,7 @@ import { compare, hash } from 'bcrypt';
 import AppError from '../../../shared/errors/AppError';
 import type { User } from '../database/entities/User';
 import type { IUsersRepository } from '../domain/repositories/IUsersRepository';
-
-interface IUpdateProfile {
-  user_id: number;
-  name: string;
-  email: string;
-  password?: string;
-  old_password?: string;
-}
+import type { IUpdateProfile } from '../domain/models/IUpdateProfile';
 
 @injectable()
 export default class UpdateProfileService {

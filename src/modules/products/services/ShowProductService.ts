@@ -2,10 +2,7 @@ import { inject, injectable } from 'tsyringe';
 import AppError from '../../../shared/errors/AppError';
 import type { IProduct } from '../domain/models/IProduct';
 import type { IProductsRepository } from '../domain/repositories/IProductsRepository';
-
-interface IShowProduct {
-  id: string;
-}
+import type { IShowProduct } from '../domain/models/IShowProduct';
 
 @injectable()
 export default class ShowProductService {

@@ -1,15 +1,9 @@
 import { inject, injectable } from 'tsyringe';
 import AppError from '@shared/errors/AppError';
 import type { IUsersRepository } from '../domain/repositories/IUsersRepository';
+import type { IUserTokensRepository } from '../domain/repositories/IUserTokensRepository';
+import type { IForgotPassword } from '../domain/models/IForgotPassword';
 import { sendEmail } from '@config/email';
-
-interface IForgotPassword {
-  email: string;
-}
-
-interface IUserTokensRepository {
-  generate(user_id: number): Promise<{ token: string } | undefined>;
-}
 
 @injectable()
 export default class SendForgotPasswordEmailService {

@@ -3,17 +3,9 @@ import { compare } from 'bcrypt';
 import AppError from '../../../shared/errors/AppError';
 import type { User } from '../database/entities/User';
 import type { IUsersRepository } from '../domain/repositories/IUsersRepository';
+import type { ISessionUser } from '../domain/models/ISessionUser';
+import type { ISessionResponse } from '../domain/models/ISessionResponse';
 import jwt, { type Secret } from 'jsonwebtoken';
-
-interface ISessionUser {
-  email: string;
-  password: string;
-}
-
-interface ISessionResponse {
-  user: User;
-  token: string;
-}
 
 @injectable()
 export default class SessionUserService {

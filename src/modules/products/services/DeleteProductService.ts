@@ -2,10 +2,7 @@ import { inject, injectable } from 'tsyringe';
 import AppError from '@shared/errors/AppError';
 import RedisCache from '../../../shared/cache/RedisCache';
 import type { IProductsRepository } from '../domain/repositories/IProductsRepository';
-
-interface IDeleteProduct {
-  id: string;
-}
+import type { IDeleteProduct } from '../domain/models/IDeleteProduct';
 
 @injectable()
 export default class DeleteProductService {

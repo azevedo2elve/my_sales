@@ -2,19 +2,9 @@ import { inject, injectable } from 'tsyringe';
 import { hash } from 'bcrypt';
 import AppError from '../../../shared/errors/AppError';
 import type { IUsersRepository } from '../domain/repositories/IUsersRepository';
+import type { IUserTokensRepository } from '../domain/repositories/IUserTokensRepository';
+import type { IResetPassword } from '../domain/models/IResetPassword';
 import { isAfter, addHours } from 'date-fns';
-
-interface IResetPassword {
-  token: string;
-  password: string;
-}
-
-interface IUserTokensRepository {
-  findByToken(token: string): Promise<{
-    user_id: number;
-    created_at: Date;
-  } | null>;
-}
 
 @injectable()
 export default class ResetPasswordService {
