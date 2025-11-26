@@ -41,7 +41,6 @@ export default class OrderRepository implements IOrdersRepository {
 
     await this.ormRepository.save(order);
 
-    // Criar os OrdersProducts separadamente
     const orderProductsRepository = AppDataSource.getRepository(OrdersProducts);
     const productRepository = AppDataSource.getRepository(Product);
 
@@ -69,7 +68,6 @@ export default class OrderRepository implements IOrdersRepository {
 
     await orderProductsRepository.save(orderProducts);
 
-    // Recarregar o order com as relações
     const completeOrder = await this.findById(order.id);
     return completeOrder!;
   }

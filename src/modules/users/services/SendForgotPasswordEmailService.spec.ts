@@ -6,11 +6,6 @@ import FakeUserTokensRepository from '../domain/repositories/fakes/FakeUserToken
 import CreateUserService from './CreateUserService';
 import SendForgotPasswordEmailService from './SendForgotPasswordEmailService';
 
-// Mock sendEmail
-jest.mock('@config/email', () => ({
-  sendEmail: jest.fn(),
-}));
-
 let fakeUsersRepository: FakeUsersRepository;
 let fakeUserTokensRepository: FakeUserTokensRepository;
 let createUserService: CreateUserService;

@@ -15,6 +15,10 @@ export default class ErrorHandleMiddleware {
       });
     }
 
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('Internal Server Error:', error);
+    }
+
     return res.status(500).json({
       type: 'error',
       message: 'Internal server error',

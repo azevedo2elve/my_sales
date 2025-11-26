@@ -17,38 +17,51 @@ export default class RedisCache {
 
       this.client.on('connect', () => {
         this.isConnected = true;
-        console.log('🔗 Redis connected successfully');
+        if (process.env.NODE_ENV !== 'test') {
+          console.log('🔗 Redis connected successfully');
+        }
       });
 
       this.client.on('ready', () => {
         this.isConnected = true;
-        console.log('✅ Redis cache is ready and enabled');
+        if (process.env.NODE_ENV !== 'test') {
+          console.log('✅ Redis cache is ready and enabled');
+        }
       });
 
       this.client.on('error', error => {
         this.isConnected = false;
-        console.warn('⚠️  Redis connection error:', error.message);
-        console.warn(
-          '💡 Make sure Redis is running: docker run -d -p 6379:6379 redis:alpine',
-        );
+        if (process.env.NODE_ENV !== 'test') {
+          console.warn('⚠️  Redis connection error:', error.message);
+          console.warn(
+            '💡 Make sure Redis is running: docker run -d -p 6379:6379 redis:alpine',
+          );
+        }
       });
 
       this.client.on('reconnecting', () => {
-        console.log('🔄 Attempting to reconnect to Redis...');
+        if (process.env.NODE_ENV !== 'test') {
+          console.log('🔄 Attempting to reconnect to Redis...');
+        }
       });
 
-      // Tentar conectar imediatamente
       this.client
         .connect()
         .then(() => {
-          console.log('🚀 Redis connection initiated successfully');
+          if (process.env.NODE_ENV !== 'test') {
+            console.log('🚀 Redis connection initiated successfully');
+          }
         })
         .catch(error => {
-          console.warn('❌ Initial Redis connection failed:', error.message);
+          if (process.env.NODE_ENV !== 'test') {
+            console.warn('❌ Initial Redis connection failed:', error.message);
+          }
         });
     } catch (error) {
       this.isConnected = false;
-      console.warn('❌ Redis initialization failed. Cache disabled.');
+      if (process.env.NODE_ENV !== 'test') {
+        console.warn('❌ Redis initialization failed. Cache disabled.');
+      }
     }
   }
 
@@ -60,7 +73,9 @@ export default class RedisCache {
     try {
       await this.client.set(key, value);
     } catch (error) {
-      console.warn('Redis save failed:', error);
+      if (process.env.NODE_ENV !== 'test') {
+        console.warn('Redis save failed:', error);
+      }
     }
   }
 
@@ -79,7 +94,9 @@ export default class RedisCache {
       const parsedData = JSON.parse(data) as T;
       return parsedData;
     } catch (error) {
-      console.warn('Redis recover failed:', error);
+      if (process.env.NODE_ENV !== 'test') {
+        console.warn('Redis recover failed:', error);
+      }
       return null;
     }
   }
@@ -92,7 +109,18 @@ export default class RedisCache {
     try {
       await this.client.del(key);
     } catch (error) {
-      console.warn('Redis invalidate failed:', error);
+      if (process.env.NODE_ENV !== 'test') {
+        console.warn('Redis invalidate failed:', error);
+      }
+    }
+  }
+
+  async disconnect(): Promise<void> {
+    if (this.client) {
+      try {
+        await this.client.quit();
+        this.isConnected = false;
+      } catch (error) {}
     }
   }
 }

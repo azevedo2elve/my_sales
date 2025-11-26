@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Customer } from '../../../customers/infra/database/entities/Customer';
-import { OrdersProducts } from './OrdersProducts';
+import type { OrdersProducts } from './OrdersProducts';
 import type { IOrder } from '../../domain/models/IOrder';
 
 @Entity('orders')
@@ -20,7 +20,7 @@ export class Order implements IOrder {
   @JoinColumn({ name: 'customer_id' })
   customer: Customer;
 
-  @OneToMany(() => OrdersProducts, orderProducts => orderProducts.order, {
+  @OneToMany('OrdersProducts', 'order', {
     cascade: true,
   })
   order_products: OrdersProducts[];

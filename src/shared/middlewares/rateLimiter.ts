@@ -11,10 +11,12 @@ const redisConfig: any = {
   enableOfflineQueue: false,
   retryStrategy: (times: number) => {
     if (times > 3) {
-      console.warn(
-        '⚠️  Redis connection failed after 3 attempts. Rate limiting disabled.',
-      );
-      return null; // Stop retrying
+      if (process.env.NODE_ENV !== 'test') {
+        console.warn(
+          '⚠️  Redis connection failed after 3 attempts. Rate limiting disabled.',
+        );
+      }
+      return null;
     }
     return Math.min(times * 100, 3000);
   },
@@ -26,22 +28,28 @@ if (process.env.REDIS_PASSWORD) {
 
 const redisClient = new Redis(redisConfig);
 
-// Tratar erros de conexão do Redis
 redisClient.on('error', error => {
-  console.warn('⚠️  Redis rate limiter error:', error.message);
-  console.warn('💡 Rate limiting will be disabled. Start Redis to enable it.');
+  if (process.env.NODE_ENV !== 'test') {
+    console.warn('⚠️  Redis rate limiter error:', error.message);
+    console.warn(
+      '💡 Rate limiting will be disabled. Start Redis to enable it.',
+    );
+  }
 });
 
 redisClient.on('connect', () => {
-  console.log('✅ Redis rate limiter connected');
+  if (process.env.NODE_ENV !== 'test') {
+    console.log('✅ Redis rate limiter connected');
+  }
 });
 
-// Tentar conectar
 redisClient.connect().catch(error => {
-  console.warn('⚠️  Rate limiter: Redis connection failed:', error.message);
-  console.warn(
-    '💡 Rate limiting disabled. Application will continue without rate limiting.',
-  );
+  if (process.env.NODE_ENV !== 'test') {
+    console.warn('⚠️  Rate limiter: Redis connection failed:', error.message);
+    console.warn(
+      '💡 Rate limiting disabled. Application will continue without rate limiting.',
+    );
+  }
 });
 
 const limiter = new RateLimiterRedis({
@@ -57,30 +65,45 @@ export default async function rateLimiter(
   next: NextFunction,
 ): Promise<void> {
   try {
-    // Verificar se o Redis está conectado
     if (redisClient.status !== 'ready') {
-      console.warn(
-        '⚠️  Rate limiter: Redis not ready, bypassing rate limiting',
-      );
+      if (process.env.NODE_ENV !== 'test') {
+        console.warn(
+          '⚠️  Rate limiter: Redis not ready, bypassing rate limiting',
+        );
+      }
       return next();
     }
 
     const result = await limiter.consume(request.ip as string);
-    console.log(
-      `✅ Rate limit OK - IP: ${request.ip}, Remaining: ${result.remainingPoints}`,
-    );
+    if (process.env.NODE_ENV !== 'test') {
+      console.log(
+        `✅ Rate limit OK - IP: ${request.ip}, Remaining: ${result.remainingPoints}`,
+      );
+    }
     return next();
   } catch (err: any) {
-    console.log('🚫 Rate limiter error:', err);
+    if (process.env.NODE_ENV !== 'test') {
+      console.log('🚫 Rate limiter error:', err);
+    }
 
     if (err.remainingPoints !== undefined) {
-      console.log(
-        `Rate limit exceeded - IP: ${request.ip}, Retry after: ${Math.round(err.msBeforeNext / 1000)}s`,
-      );
+      if (process.env.NODE_ENV !== 'test') {
+        console.log(
+          `Rate limit exceeded - IP: ${request.ip}, Retry after: ${Math.round(err.msBeforeNext / 1000)}s`,
+        );
+      }
       throw new AppError('Too many requests. Try again later.', 429);
     }
 
-    console.warn('Rate limiter bypassed due to error:', err.message);
+    if (process.env.NODE_ENV !== 'test') {
+      console.warn('Rate limiter bypassed due to error:', err.message);
+    }
     return next();
   }
+}
+
+export async function closeRateLimiterConnection(): Promise<void> {
+  try {
+    await redisClient.quit();
+  } catch (error) {}
 }

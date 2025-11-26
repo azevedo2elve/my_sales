@@ -1,4 +1,4 @@
-import UserToken from '../../../database/entities/UserToken';
+import { UserToken } from '../../../database/entities/UserToken';
 import type {
   IUserTokensRepository,
   IUserToken,

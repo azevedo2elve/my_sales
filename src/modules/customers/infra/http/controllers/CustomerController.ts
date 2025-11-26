@@ -11,14 +11,14 @@ export default class CustomerController {
     const page = parseInt(request.query.page as string) || 1;
     const limit = parseInt(request.query.limit as string) || 10;
 
-    const listCustomerService = new ListCustomerService();
+    const listCustomerService = container.resolve(ListCustomerService);
     const customers = await listCustomerService.execute(page, limit);
     return response.json(customers);
   }
 
   async show(request: Request, response: Response): Promise<Response> {
     const id = Number(request.params.id);
-    const showCustomerService = new ShowCustomerService();
+    const showCustomerService = container.resolve(ShowCustomerService);
     const customer = await showCustomerService.execute({ id });
     return response.json(customer);
   }
@@ -36,7 +36,7 @@ export default class CustomerController {
   async update(request: Request, response: Response): Promise<Response> {
     const id = Number(request.params.id);
     const { name, email } = request.body;
-    const updateCustomerService = new UpdateCustomerService();
+    const updateCustomerService = container.resolve(UpdateCustomerService);
     const customer = await updateCustomerService.execute({
       id,
       name,
@@ -47,7 +47,7 @@ export default class CustomerController {
 
   async delete(request: Request, response: Response): Promise<Response> {
     const id = Number(request.params.id);
-    const deleteCustomerService = new DeleteCustomerService(customerRepository);
+    const deleteCustomerService = container.resolve(DeleteCustomerService);
     await deleteCustomerService.execute({ id });
     return response.status(204).send([]);
   }

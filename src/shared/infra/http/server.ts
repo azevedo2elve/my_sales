@@ -11,23 +11,34 @@ import ErrorHandleMiddleware from '@shared/middlewares/ErrorHandleMiddleware';
 import AppDataSource from '@shared/infra/typeorm/data-source';
 import rateLimiter from '@shared/middlewares/rateLimiter';
 
-AppDataSource.initialize()
-  .then(async () => {
-    const app = express();
+const createApp = async () => {
+  await AppDataSource.initialize();
+  console.log('✓ Connected to the database');
 
-    app.use(cors());
-    app.use(express.json());
+  const app = express();
 
-    app.use(rateLimiter);
+  app.use(cors());
+  app.use(express.json());
 
-    app.use(routes);
-    app.use(errors()); //middleware de erros do celebrate, tem que ficar abaixo das rotas, para a validação dos schemas funcionar
-    app.use(ErrorHandleMiddleware.handleError);
+  app.use(rateLimiter);
 
-    console.log('Connected to the database');
+  app.use(routes);
+  app.use(errors());
+  app.use(ErrorHandleMiddleware.handleError);
 
-    app.listen(3333, () => {
-      console.log('Server is running on port 3333');
+  return app;
+};
+
+if (process.env.NODE_ENV !== 'test') {
+  createApp()
+    .then(app => {
+      app.listen(3333, () => {
+        console.log('✓ Server is running on port 3333');
+      });
+    })
+    .catch(error => {
+      console.error('✗ Failed to connect to the server:', error);
     });
-  })
-  .catch(error => console.error('Failed to connect to the database:', error));
+}
+
+export default createApp;

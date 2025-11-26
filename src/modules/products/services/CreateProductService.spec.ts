@@ -3,15 +3,6 @@ import { productMock } from '../domain/factories/productFactory';
 import FakeProductsRepository from '../domain/repositories/fakes/FakeProductsRepository';
 import CreateProductService from './CreateProductService';
 
-// Mock RedisCache
-jest.mock('../../../shared/cache/RedisCache', () => {
-  return jest.fn().mockImplementation(() => ({
-    save: jest.fn(),
-    recover: jest.fn(),
-    invalidate: jest.fn(),
-  }));
-});
-
 let fakeProductsRepository: FakeProductsRepository;
 let createProductService: CreateProductService;
 

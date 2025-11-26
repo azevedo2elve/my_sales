@@ -8,7 +8,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Order } from './Order';
-import { Product } from '@modules/products/database/entities/Product';
+import type { Product } from '@modules/products/database/entities/Product';
 import type { IOrdersProducts } from '../../domain/models/IOrdersProducts';
 
 @Entity('orders_products')
@@ -23,7 +23,7 @@ export class OrdersProducts implements IOrdersProducts {
   @Column({ type: 'integer' })
   order_id: number;
 
-  @ManyToOne(() => Product, product => product.order_products)
+  @ManyToOne('Product', 'order_products')
   @JoinColumn({ name: 'product_id' })
   product: Product;
 

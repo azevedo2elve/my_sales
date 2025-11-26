@@ -16,5 +16,10 @@
   "prettier.tabWidth": 2,
   "prettier.singleQuote": true,
   "prettier.trailingComma": "all",
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "jest.nodeEnv": {
+    "NODE_ENV": "test"
+  },
+  "jest.jestCommandLine": "npm test --",
+  "jest.autoRun": "off"
 }

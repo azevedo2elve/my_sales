@@ -6,14 +6,14 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { OrdersProducts } from '../../../orders/database/entities/OrdersProducts';
+import type { OrdersProducts } from '../../../orders/database/entities/OrdersProducts';
 
 @Entity('products')
 export class Product {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @OneToMany(() => OrdersProducts, orderProducts => orderProducts.product)
+  @OneToMany('OrdersProducts', 'product')
   order_products: OrdersProducts[];
 
   @Column({ type: 'text' })

@@ -1,21 +1,15 @@
-import { hash } from 'bcrypt';
 import 'reflect-metadata';
+import { hash } from 'bcrypt';
 import AppError from '../../../shared/errors/AppError';
 import { userMock, userMock2 } from '../domain/factories/userFactory';
 import FakeUsersRepository from '../domain/repositories/fakes/FakeUsersRepository';
 import CreateUserService from './CreateUserService';
-
-jest.mock('bcrypt', () => ({
-  hash: jest.fn(),
-}));
 
 let fakeUsersRepository: FakeUsersRepository;
 let createUserService: CreateUserService;
 
 describe('CreateUserService', () => {
   beforeEach(() => {
-    (hash as jest.Mock).mockResolvedValue('hashed-password');
-
     fakeUsersRepository = new FakeUsersRepository();
     createUserService = new CreateUserService(fakeUsersRepository);
   });
@@ -40,6 +34,6 @@ describe('CreateUserService', () => {
     const user = await createUserService.execute(userMock);
 
     expect(user.password).not.toBe('123456');
-    expect(user.password).toBe('hashed-password');
+    expect(user.password).toBe('hashed-123456');
   });
 });

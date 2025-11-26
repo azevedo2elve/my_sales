@@ -4,26 +4,6 @@ import { userMock } from '../domain/factories/userFactory';
 import FakeUsersRepository from '../domain/repositories/fakes/FakeUsersRepository';
 import UpdateUserAvatarService from './UpdateUserAvatarService';
 
-jest.mock('fs', () => ({
-  promises: {
-    stat: jest.fn().mockResolvedValue(true),
-    unlink: jest.fn().mockResolvedValue(undefined),
-  },
-  default: {
-    promises: {
-      stat: jest.fn().mockResolvedValue(true),
-      unlink: jest.fn().mockResolvedValue(undefined),
-    },
-  },
-}));
-
-jest.mock('@config/upload', () => ({
-  __esModule: true,
-  default: {
-    directory: '/tmp/uploads',
-  },
-}));
-
 let fakeUsersRepository: FakeUsersRepository;
 let updateUserAvatarService: UpdateUserAvatarService;
 
